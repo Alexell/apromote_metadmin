@@ -1,13 +1,26 @@
 ------------------------------
 // APromoteGUI by Lead4u    //
-// Mail: J_G_24@hotmail.com //
 // Steam: Lead4u2           //
-// Version: 1.3 Beta        //
+// Version: 2.1             //
+// Date: 03-11-2015         //
+// If your looking in here  //
+// feel free to send me a   //
+// message about any issues //
 ------------------------------
-require( "glon" )
+
+if ULib==nil or GetConVarString("utime_welcome")== "" then print("WARNING: Missing dependancy UTime/ULX/ULib APromote is now inactive.") return end
+
 resource.AddFile("materials/gui/silkicons/cog.vmt")
 resource.AddFile("materials/gui/silkicons/cog.vtf")
 ULib.ucl.registerAccess( "apromote_settings", "superadmin", "Allows managing all settings related to APromote.", "XGUI" )
+
+notglonbecausepeoplebitch = {}
+notglonbecausepeoplebitch.encode = function(what)
+	return util.TableToJSON(what)
+end
+notglonbecausepeoplebitch.decode = function(what)
+	return util.JSONToTable(what)
+end
 
 local APromote = {};
 local set = {} APromote["set"] = set
@@ -29,14 +42,14 @@ local function APUpdateGroups()
 			end
 		end
 		xgui.sendDataTable( {}, "AP_SendData" )
-		file.Write("APromote/settings.txt", glon.encode(APromote))
+		file.Write("apromote/settings.txt", notglonbecausepeoplebitch.encode(APromote))
 end
 
 local function loadAP()
 	xgui.addDataType( "AP_SendData", function() return APromote["grp"] end, "apromote_settings", 0, 0 )
 	
 // File Stuffs
-	if (!file.Exists("APromote/settings.txt")) then
+	if (!file.Exists("apromote/settings.txt", "DATA")) then
 		for k, v in pairs(ULib.ucl.groups) do
 			APromote["grp"][k] = -1
 		end
@@ -45,9 +58,10 @@ local function loadAP()
 		APromote["set"]["ap_snd_scope"] = 1
 		APromote["set"]["ap_effect_enabled"] = 1
 		APromote["set"]["ap_auto_demote"] = 0
-		file.Write("APromote/settings.txt", glon.encode(APromote))
+		file.CreateDir("apromote")
+		file.Write("apromote/settings.txt", notglonbecausepeoplebitch.encode(APromote))
 	else 
-		APromote = glon.decode(file.Read( "APromote/settings.txt" ))
+		APromote = notglonbecausepeoplebitch.decode(file.Read( "apromote/settings.txt" ))
 	end
 // ConVars
 	ULib.replicatedWritableCvar("ap_enabled","rep_ap_enabled", APromote["set"]["ap_enabled"],false,false,"apromote_settings")
@@ -63,7 +77,7 @@ end
 local function cVarChange( sv_cvar, cl_cvar, ply, old_val, new_val )
 	if ( sv_cvar =="ap_enabled" or sv_cvar=="ap_snd_enabled" or sv_cvar=="ap_snd_scope" or sv_cvar=="ap_effect_enabled" or sv_cvar=="ap_auto_demote" ) then
 		APromote["set"][sv_cvar] = new_val
-		file.Write("APromote/settings.txt", glon.encode(APromote))
+		file.Write("apromote/settings.txt", notglonbecausepeoplebitch.encode(APromote))
 	end
 end
 
@@ -99,7 +113,7 @@ concommand.Add("APGroup", function( ply, cmd, args )
 	if (ply:query( "apromote_settings" ) and isValidCommand( args, APromote["grp"] )) then
 		APromote["grp"][args[1]] = tonumber(args[2])
 		xgui.sendDataTable( {}, "AP_SendData" )
-		file.Write("APromote/settings.txt", glon.encode(APromote))
+		file.Write("apromote/settings.txt", notglonbecausepeoplebitch.encode(APromote))
 	end
 end)
  
