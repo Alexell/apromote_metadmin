@@ -137,7 +137,7 @@ local Hours = 0
 				return;
 			else
 				if ( ply:IsConnected() ) then 
-					RunConsoleCommand("ulx", "adduser" , ply:Nick() , Rank)
+					RunConsoleCommand("ulx", "setrank", ply:Nick(), Rank, "Повышение по количеству часов на сервере.")
 					PlayRankSound( ply );
 				end
 			end
